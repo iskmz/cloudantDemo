@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     EditText txtOut;
 
 
-    File path;
+    File DS_path;
     DocumentStore ds;
 
 
@@ -52,18 +52,34 @@ public class MainActivity extends AppCompatActivity {
         btnUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateLocalDataStore();
+                createLocalDataStore();
                 uploadLocalToRemote();
 
             }
         });
 
+        btnDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                readDataFromRemote();
+                showDataOnView();
+            }
+        });
+
     }
 
-    private void updateLocalDataStore() {
+    private void showDataOnView() {
+    }
+
+    private void readDataFromRemote() {
+
+
+    }
+
+    private void createLocalDataStore() {
 
         try{
-            ds = DocumentStore.getInstance(new File(path,"cloudantdemo"));
+            ds = DocumentStore.getInstance(new File(DS_path,CloudantDefaults.DB_NAME));
 
             DocumentRevision revision = new DocumentRevision();
             Map<String, Object> body = new HashMap<String, Object>();
@@ -90,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         DocumentStore ds = null;
         try {
             uri = new URI(CloudantDefaults.URL + "/" + CloudantDefaults.DB_NAME);
-            ds = DocumentStore.getInstance(new File(path, "cloudantdemo"));
+            ds = DocumentStore.getInstance(new File(DS_path,CloudantDefaults.DB_NAME));
         }
         catch (URISyntaxException use){
             use.printStackTrace();
@@ -113,7 +129,8 @@ public class MainActivity extends AppCompatActivity {
         txtIn = findViewById(R.id.txtDataIn);
         txtOut = findViewById(R.id.txtDataOut);
 
-        path = getApplicationContext().getDir("documentstores", Context.MODE_PRIVATE);
+        DS_path = getApplicationContext().getDir(CloudantDefaults.LOCAL_DS_PATH_STRING
+                , Context.MODE_PRIVATE);
 
 
 
