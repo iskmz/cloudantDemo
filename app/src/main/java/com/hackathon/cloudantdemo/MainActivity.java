@@ -87,6 +87,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteDoc(String docID) {
+        // 1 // get doc from remote, by ID // PULL
+        URI uri = null;
+        DocumentStore dsDelete = null;
+        try {
+            uri = new URI(CloudantDefaults.URL + "/" + CloudantDefaults.DB_NAME);
+            dsDelete = DocumentStore.getInstance(new File(DS_path,CloudantDefaults.DB_NAME));
+        }
+        catch (URISyntaxException use){ use.printStackTrace(); }
+        catch (DocumentStoreNotOpenedException dsnoe){ dsnoe.printStackTrace(); }
+
+        if(uri == null || dsDelete == null)
+        {
+            msgFailed("ERROR! # 1 , in DELETION");
+            return;
+        }
+
+        Replicator pullReplicator = ReplicatorBuilder.pull().from(uri).to(dsDelete).build();
+        pullReplicator.start();
+
+        // 2 // delete locally (by revision)
+        DocumentRevision currentRev = null;
+        try {
+            currentRev = dsDelete.database().read(docID);
+        } catch (DocumentNotFoundException e) {
+            e.printStackTrace();
+        } catch (DocumentStoreException e) {
+            e.printStackTrace();
+        }
+
+        if(currentRev==null) {
+            msgFailed("ERROR !  # 2 , in DELETION");
+            return;
+        }
+
+        try {
+            dsDelete.database().delete(currentRev);
+        } catch (ConflictException e) {
+            e.printStackTrace();
+        } catch (DocumentNotFoundException e) {
+            e.printStackTrace();
+        } catch (DocumentStoreException e) {
+            e.printStackTrace();
+        }
+
+        // 3 // replicate [local-> remote] // PUSH
+        Replicator replicator = ReplicatorBuilder.push().from(dsDelete).to(uri).build();
+        replicator.start();
 
     }
 
