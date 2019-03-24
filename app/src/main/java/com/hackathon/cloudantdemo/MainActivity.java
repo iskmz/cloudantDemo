@@ -1,6 +1,7 @@
 package com.hackathon.cloudantdemo;
 
 import android.content.Context;
+import android.provider.DocumentsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -32,7 +33,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnDown, btnUp,btnUpdate;
+    Button btnDown, btnUp,btnUpdate,btnDelete;
     TextView txtIn;
     EditText txtOut,txtUpdate;
 
@@ -40,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
     DocumentStore dsUpload, dsDownload;
 
 
-// docID to check update on
-    // 2bf58e51a82f4378a81b456decd7944f
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +69,89 @@ public class MainActivity extends AppCompatActivity {
                 showDataOnView();
             }
         });
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateDoc("2bf58e51a82f4378a81b456decd7944f");
+            }
+        });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDoc("49fd7440107a4177a3c07f5a188e4143");
+            }
+        });
+
+    }
+
+    private void deleteDoc(String docID) {
+
+    }
+
+    private void updateDoc(String docID) {
+
+        // 1 // get doc from remote, by ID // PULL
+        URI uri = null;
+        DocumentStore dsTmp = null;
+        try {
+            uri = new URI(CloudantDefaults.URL + "/" + CloudantDefaults.DB_NAME);
+            dsTmp = DocumentStore.getInstance(new File(DS_path,CloudantDefaults.DB_NAME));
+        }
+        catch (URISyntaxException use){ use.printStackTrace(); }
+        catch (DocumentStoreNotOpenedException dsnoe){ dsnoe.printStackTrace(); }
+
+        if(uri == null || dsTmp == null)
+        {
+            msgFailed("ERROR! # 1");
+            return;
+        }
+
+        Replicator pullReplicator = ReplicatorBuilder.pull().from(uri).to(dsTmp).build();
+        pullReplicator.start();
+
+
+        // 2 // change & update (local)
+        DocumentRevision prevRevision=null;
+        try {
+            prevRevision = dsTmp.database().read(docID);
+        } catch (DocumentNotFoundException e) { e.printStackTrace(); }
+        catch (DocumentStoreException e) { e.printStackTrace(); }
+
+        if(prevRevision==null) {
+            msgFailed("ERROR !  # 2 ");
+            return;
+        }
+
+        Map<String,Object> tmpMap = prevRevision.getBody().asMap();
+        tmpMap.put("new DATA",txtUpdate.getText().toString().isEmpty()?
+                "N/A":txtUpdate.getText().toString());
+        prevRevision.setBody(DocumentBodyFactory.create(tmpMap));
+
+
+        // updating prevRevision with new one
+        DocumentRevision newRevision = null;
+        try {
+            newRevision = dsTmp.database().update(prevRevision);
+        } catch (ConflictException e) {
+            e.printStackTrace();
+        } catch (AttachmentException e) {
+            e.printStackTrace();
+        } catch (DocumentStoreException e) {
+            e.printStackTrace();
+        } catch (DocumentNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if(newRevision == null){
+            msgFailed("ERROR !  # 3");
+            return;
+        }
+
+        // 3 // replicate [local-> remote] // PUSH
+        Replicator replicator = ReplicatorBuilder.push().from(dsTmp).to(uri).build();
+        replicator.start();
 
     }
 
@@ -193,6 +275,10 @@ public class MainActivity extends AppCompatActivity {
         btnDown = findViewById(R.id.btnDataIn);
         btnUp = findViewById(R.id.btnDataOut);
         btnUpdate = findViewById(R.id.btnDataUpdate);
+        btnDelete = findViewById(R.id.btnDelete);
+
+        btnDown.setFocusable(true);
+        btnDown.requestFocus();
 
         txtIn = findViewById(R.id.txtDataIn);
         txtIn.setMovementMethod(new ScrollingMovementMethod());
