@@ -2,7 +2,7 @@ package com.hackathon.cloudantdemo;
 
 import java.io.File;
 
-public class CloudantDefaults {
+final public class CloudantDefaults {
 
 
     public static final String URL = "https://" +

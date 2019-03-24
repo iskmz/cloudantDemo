@@ -3,7 +3,39 @@
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <requestFocus />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="1">
+
+        <EditText
+            android:id="@+id/txtDataOut"
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:hint="enter text to upload ..."
+            android:scrollHorizontally="false"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbars="vertical" />
+
+        <Button
+            android:id="@+id/btnDataOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload NEW Data"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#000000">
+
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -11,6 +43,8 @@
         android:gravity="center"
         android:layout_weight="1">
 
+
+        <requestFocus/>
         <TextView
             android:id="@+id/txtDataIn"
             android:layout_width="250dp"
@@ -18,7 +52,9 @@
             android:text="data to download..."
             android:scrollHorizontally="false"
             android:scrollbarAlwaysDrawVerticalTrack="true"
-            android:scrollbars="vertical" />
+            android:scrollbars="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
 
         <Button
             android:id="@+id/btnDataIn"
@@ -26,7 +62,52 @@
             android:layout_height="wrap_content"
             android:text="Get DB Data"/>
 
+        <ProgressBar
+            android:id="@+id/progressGetData"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="gone"/>
+
+
     </LinearLayout>
+
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#000000">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="1">
+
+        <EditText
+            android:id="@+id/txtDataUpdate"
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:hint="enter text to UPDATE a document ..."
+            android:scrollHorizontally="false"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbars="vertical"/>
+
+        <Button
+            android:id="@+id/btnDataUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UPDATE Data"/>
+
+
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,30 +121,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
+        android:gravity="center"
         android:layout_weight="1">
 
-        <EditText
-            android:id="@+id/txtDataOut"
-            android:layout_width="250dp"
-            android:layout_height="match_parent"
-            android:hint="enter text to upload here .."
-            android:scrollHorizontally="false"
-            android:scrollbarAlwaysDrawVerticalTrack="true"
-            android:scrollbars="vertical"/>
 
         <Button
-            android:id="@+id/btnDataOut"
+            android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload Data"/>
+            android:text="Delete a document"/>
 
 
     </LinearLayout>
-
-
-
-
-
-
 
 </LinearLayout>
